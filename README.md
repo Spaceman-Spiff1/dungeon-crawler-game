@@ -10,6 +10,7 @@ This repo is meant to feel like a school project:
 - frequent commits
 - feature branches and pull requests
 - simple architecture before clever architecture
+- local understanding before cloud deployment
 
 ## Current Goal
 
@@ -49,6 +50,79 @@ dungeon_crawler_game/
 +- pyproject.toml
 ```
 
+## Working Rules
+
+- Keep pull requests small
+- Keep logic in Python modules, not directly in route handlers
+- Treat the browser as untrusted
+- Make the backend the source of truth
+- Do not let the client calculate rewards, loot, or final game state
+- Prefer code that is easy to explain over code that is fancy
+- Use a project-local virtual environment for all Python work
+
+## Python Environment Rule
+
+All Python development in this repository must be performed inside a project-local virtual environment named `.venv`.
+
+Do not:
+- install project packages globally
+- run tests outside the virtual environment
+- assume system Python matches the project environment
+
+## Windows Setup
+
+From PowerShell in the project root:
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+```
+
+If PowerShell blocks activation, run this once:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+
+Deactivate later with:
+
+```powershell
+deactivate
+```
+
+## Preferred Dev Environment
+
+For long-term development, WSL2 with Ubuntu is recommended because it provides a more Linux-like environment for Python, Git, containers, and Kubernetes work.
+
+If using WSL2, prefer keeping the repo inside the Linux filesystem, for example:
+
+```bash
+~/projects/dungeon-crawler-game
+```
+
+## Git And GitHub Workflow
+
+We are using GitHub to practice professional habits, not just as backup.
+
+Typical workflow:
+
+```powershell
+git checkout -b feat/character-save
+# make a small change
+git add .
+git commit -m "Add character save flow"
+git push -u origin feat/character-save
+```
+
+Then open a pull request into `main`.
+
+Guidelines:
+- one branch per task
+- one pull request per focused change
+- merge only when the change is understood
+- keep secrets out of the repo
+
 ## First Milestone
 
 Make one local user flow work end to end:
@@ -59,11 +133,42 @@ Make one local user flow work end to end:
 
 Do not add login, cloud deployment, or GKE work in this milestone.
 
-## Working Rules
+## Testing Plan
 
-- Keep pull requests small
-- Keep logic in Python modules, not directly in route handlers
-- Treat the browser as untrusted
-- Make the backend the source of truth
-- Do not let the client calculate rewards, loot, or final game state
-- Prefer code that is easy to explain over code that is fancy
+Automated testing should stay small and free.
+
+The current direction is:
+- run tests locally inside `.venv`
+- later add GitHub Actions for free pull request and push checks
+- keep CI simple at first: install dependencies and run `pytest`
+
+## Cloud Direction
+
+Cloud work comes later.
+
+Planned order:
+1. local Python + SQLite
+2. small web app
+3. auth and ownership checks
+4. manual Cloud Run deployment
+5. GitHub-to-GCP integration
+6. GKE as a temporary learning lab, not the first production target
+
+## Security Basics
+
+Even in a tiny game, assume the client can lie.
+
+That means the backend must decide:
+- what a player owns
+- whether an item can be equipped
+- whether an encounter result is valid
+- whether a character belongs to the logged-in user
+
+## Next Step
+
+Finish Milestone 1 in a way that is easy to explain:
+- build character creation
+- save to SQLite
+- load from SQLite
+- add tests
+- walk through each file and why it exists
