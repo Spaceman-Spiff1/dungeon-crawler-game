@@ -1,0 +1,1 @@
+"""Web package for future Flask routes and templates."""
